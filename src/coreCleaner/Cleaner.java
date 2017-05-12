@@ -3,15 +3,16 @@ package coreCleaner;
 import java.io.*;
 import java.util.*;
 
+import javax.security.auth.kerberos.KerberosKey;
+
 /**
  * @author jinshu
  * @version 1.0
  */
 public class Cleaner {
 	private String rootPath;
-	private String[] suffix;
-	private HashMap<File, File[]> fileList = new HashMap<>();
-	private Vector<File> redlist=new Vector<>();
+	private String[] suffix;	
+	private HashMap<File, File[]> fileMap = new HashMap<>();
 	private boolean hasNext=false;
 
 	public Cleaner(String rootPath, String... suffix) {
@@ -21,88 +22,100 @@ public class Cleaner {
 
 	private File[] getFiles(String rootPath) {
 		File superFile = new File(rootPath);
-		if (superFile.exists() && superFile.isDirectory()&&superFile.listFiles().length!=0) {
-			return superFile.listFiles();
+		if (superFile.exists()) {
+			if(superFile.isFile()){
+				return new File[0];
+			}
+			else {
+				return superFile.listFiles();//空文件夹和顶层文件返回空数组,非空文件夹正常返回
+			}			
 		} else {
-			return null;
+			return null;//不存在文件返回null
 		}
 	}
 
 	private File[] getFiles(String rootPath, String... suffix) {
 		File superFile = new File(rootPath);
-		if (superFile.exists() && superFile.isDirectory()&&superFile.listFiles().length!=0) {
-			SuffixFilter filter = new SuffixFilter(suffix);
-			return superFile.listFiles(filter);
+		if (superFile.exists()) {
+			if(superFile.isFile()){
+				return new File[0];
+			}
+			else {
+				SuffixFilter filter = new SuffixFilter(suffix);
+				return superFile.listFiles(filter);
+			}		
 		} else {
 			return null;
 		}
 	}
 
-	private File[] getAllFiles(String rootPath) {
+	private HashMap<File, File[]> getAllFiles(String rootPath) {
+		File rootFile=new File(rootPath);
 		File[] files = getFiles(rootPath);
-		fileList.put(new File(rootPath), files);
-		if (files != null) {
+		fileMap.put(rootFile, files);
+		if (files != null && files.length!=0) {
 			for (File file : files) {
-				System.out.println("搜寻"+file.getPath());
 				getAllFiles(file.getPath());
-				redlist.add(file);
 			}
 		}
-		return redlist.toArray(new File[redlist.size()]);
+		return fileMap;
 	}
 
-	private File[] getAllFiles(String rootPath, String... suffix) {
-		File[] files = getAllFiles(rootPath);
-		if (files != null) {
-			SuffixFilter filter = new SuffixFilter(suffix);
-			Vector<File> acceptList = new Vector<>();
-			fileList.forEach((k, v) -> {
+	private HashMap<File, File[]> getAllFiles(String rootPath, String... suffix) {
+		HashMap<File, File[]> fileMapClone = getAllFiles(rootPath);
+		HashMap<File, File[]> fileMapFilter = new HashMap<>();
+		SuffixFilter filter = new SuffixFilter(suffix);
+		fileMapClone.forEach((k, v) -> {
+			if (v != null) {
+				Vector<File> acceptFile=new Vector<>();
+				for (File file : v) {
+					if (filter.accept(file.getParentFile(), file.getName())) {
+						acceptFile.add(file);
+					}
+				}
+				fileMapFilter.put(k, acceptFile.toArray(new File[acceptFile.size()]));
+			}
+		});
+		return fileMapFilter;
+	}	
+
+	public void cleanFilterFile() {
+		HashMap<File, File[]> fileMapFilter=getAllFiles(rootPath, suffix);
+		System.gc();
+		if(fileMapFilter.size()!=0){
+			fileMapFilter.forEach((k,v)->{
 				if(v!=null){
-					Vector<File> unacceptList = new Vector<>();
-					for (int i = 0; i < v.length; i++) {
-						if (filter.accept(v[i].getAbsoluteFile(), v[i].getName())) {
-							acceptList.add(v[i]);
-						} else {
-							unacceptList.add(v[i]);
+					for (File file : v) {
+						file.setExecutable(true);
+						if (file.delete()) {
+							System.out.println("删除成功,路径:" + file.getPath());
+							//删除后更改对应的全局fileMap
+							//TODO
+						}
+						else{
+							System.out.println("删除失败,路径:" + file.getPath());
 						}
 					}
-					fileList.replace(k, unacceptList.toArray(new File[unacceptList.size()]));
-				}
+				}			
 			});
-			if (acceptList.size() != 0) {
-				return acceptList.toArray(new File[acceptList.size()]);
-			} else {
-				return null;
-			}
-		} else {
-			return null;
 		}
 	}
 
-	public void clean(boolean cleanEmptyFolder) {
-		File[] files = getAllFiles(rootPath, suffix);
-		System.gc();
-		for (int i = 0; i < files.length; i++) {
-			files[i].setExecutable(true);
-			if (files[i].delete()) {
-				System.out.println(
-						"删除成功!进度:" + (float) (i + 1) / (float) files.length * 100.0f 
-						+"%,路径:" + files[i].getPath());
-			} else {
-				System.out.println(
-						"删除失败!进度:" + (float) (i + 1) / (float) files.length * 100.0f
-						+"%,路径:" + files[i].getPath());
-			}
-		}
-		
-		if(cleanEmptyFolder){			
-			{
-				fileList.forEach((k, v) -> {
-					if(v==null&&k.delete()){
+	public void cleanEmptyFolder() {
+		if(fileMap.size()!=0){
+			{				
+				hasNext=false;
+				fileMap.forEach((k,v)->{
+					if(k.isDirectory()&&v.length==0&&k.delete()){
 						hasNext=true;
 					}
-				});
-			}while(hasNext);
+				});				
+			}while (hasNext);
 		}
+	}
+
+	public void cleanAll() {
+		cleanFilterFile();
+		cleanEmptyFolder();
 	}
 }
