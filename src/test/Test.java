@@ -6,6 +6,8 @@ public class Test {
 	public static void main(String[] args){
 		Cleaner aCleaner=new Cleaner("C:\\", ".tmp", ".TMP");
 		aCleaner.cleanAll();
-		//System.getenv("SYSTEMDRIVE");
+		
+		//这是驱动器盘名的获得方式,保存备用
+		System.getenv("SYSTEMDRIVE");
 	}
 }
