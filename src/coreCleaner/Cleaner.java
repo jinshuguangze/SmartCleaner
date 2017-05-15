@@ -64,7 +64,6 @@ public class Cleaner {
 	 *            过滤字符串数组
 	 * @return 正常文件夹返回过滤后的文件列表,空文件夹和文件返回空数组,地址不存在返回空
 	 */
-	@SuppressWarnings("unused")
 	private File[] getFiles(String rootPath, String... suffix) {
 		File rootFile = new File(rootPath);
 		if (rootFile.exists()) {
@@ -145,7 +144,7 @@ public class Cleaner {
 	 *            父目录值
 	 * @return 处理后的HashMap
 	 */
-	public HashMap<File, File[]> removeHashMapKey(HashMap<File, File[]> fileMap, File keyFile) {
+	private HashMap<File, File[]> removeHashMapKey(HashMap<File, File[]> fileMap, File keyFile) {
 		// 防止传进来是个未初始化的HashMap
 		if (fileMap != null) {
 			fileMap.remove(keyFile);
@@ -166,7 +165,7 @@ public class Cleaner {
 	 *            父目录值
 	 * @return 处理后的HashMap
 	 */
-	public HashMap<File, File[]> removeHashMapKey(HashMap<File, File[]> fileMap, File[] keyFiles) {
+	private HashMap<File, File[]> removeHashMapKey(HashMap<File, File[]> fileMap, File[] keyFiles) {
 		// 防止传进来是个未初始化的HashMap
 		if (fileMap != null) {
 			// 防止空指针
@@ -194,7 +193,7 @@ public class Cleaner {
 	 *            子目录值
 	 * @return 处理后的HashMap
 	 */
-	public HashMap<File, File[]> removeHashMapValue(HashMap<File, File[]> fileMap, File keyFile, File valueFile) {
+	private HashMap<File, File[]> removeHashMapValue(HashMap<File, File[]> fileMap, File keyFile, File valueFile) {
 		// 防止传进来是个未初始化的HashMap
 		if (fileMap != null) {
 			File[] oldFiles = fileMap.get(keyFile);
@@ -223,7 +222,7 @@ public class Cleaner {
 	 *            子目录值
 	 * @return 处理后的HashMap
 	 */
-	public HashMap<File, File[]> removeHashMapValue(HashMap<File, File[]> fileMap, File keyFile, File[] valueFiles) {
+	private HashMap<File, File[]> removeHashMapValue(HashMap<File, File[]> fileMap, File keyFile, File[] valueFiles) {
 		// 防止传进来是个未初始化的HashMap
 		if (fileMap != null) {
 			File[] oldFiles = fileMap.get(keyFile);
