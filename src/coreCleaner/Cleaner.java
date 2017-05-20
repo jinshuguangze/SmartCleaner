@@ -4,13 +4,19 @@ import java.io.*;
 import java.util.*;
 
 /**
- * @author jinshu
- * @version 1.7
+ * @author jinshuguangze
+ * @version 1.8
  */
 public class Cleaner {
 
 	private Reader aReader;
 
+	/**
+	 * 构造函数
+	 * 
+	 * @param aReader
+	 *            Reader对象
+	 */
 	public Cleaner(Reader aReader) {
 		this.aReader = aReader;
 	}

@@ -1,8 +1,7 @@
 package coreCleaner;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Vector;
+import java.io.*;
+import java.util.*;
 
 public class Toolkit {
 

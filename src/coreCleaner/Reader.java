@@ -3,6 +3,10 @@ package coreCleaner;
 import java.io.*;
 import java.util.*;
 
+/**
+ * @author jinshuguangze
+ * @version 1.2
+ */
 public class Reader {
 
 	// 文件结构集,key是上级文件,value是下级文件列表
@@ -53,12 +57,11 @@ public class Reader {
 	}
 
 	/**
-	 * 得到过滤器下的浅度搜索目标根文件下的所有文件
+	 * 得到过滤器下的浅度搜索目标文件下的所有文件
 	 * 
-	 * @param rootPath
-	 *            根文件地址字符串
-	 * @param suffix
-	 *            过滤字符串数组
+	 * @param path
+	 *            文件地址字符串
+	 * 
 	 * @return 正常文件夹返回过滤后的文件列表,空文件夹和文件返回空数组,地址不存在返回空
 	 */
 	public File[] getFiles(String path) {
@@ -77,12 +80,11 @@ public class Reader {
 	}
 
 	/**
-	 * 得到过滤器下的深度搜索目标根文件下的所有文件
+	 * 得到过滤器下的深度搜索目标文件下的所有文件
 	 * 
-	 * @param rootPath
-	 *            根文件地址字符串
-	 * @param suffix
-	 *            过滤字符串数组
+	 * @param path
+	 *            文件地址字符串
+	 * 
 	 * @return 一个存放过滤器下的文件集合的HashMap
 	 */
 	public HashMap<File, File[]> getAllFiles(String path) {
@@ -97,22 +99,46 @@ public class Reader {
 		return this.fileMap;
 	}
 
+	/**
+	 * 得到文件结构集HashMap,key是上级文件,value是下级文件列表
+	 * 
+	 * @return 得到文件结构集
+	 */
 	public HashMap<File, File[]> getFileMap() {
 		return fileMap;
 	}
 
+	/**
+	 * 得到过滤文件结构集HashMap,key是上级文件,value是下级文件列表
+	 * 
+	 * @return 得到过滤文件结构集
+	 */
 	public HashMap<File, File[]> getFileMapFilter() {
 		return fileMapFilter;
 	}
 
+	/**
+	 * 得到需要进行一系列处理的文件根目录,比如"C:\\"
+	 * 
+	 * @return 得到文件根目录
+	 */
 	public String getRootPath() {
 		return rootPath;
 	}
 
+	/**
+	 * 得到过滤器集,一般以文件类型作为区分,比如{".exe"}就是过滤出应用程序的
+	 * 
+	 * @return 得到过滤器集
+	 */
 	public String[] getSuffix() {
 		return suffix;
 	}
 
+	/**
+	 * 
+	 * @param suffix
+	 */
 	public void setSuffix(String[] suffix) {
 		this.suffix = suffix;
 		// TODO
