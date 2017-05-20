@@ -2,6 +2,10 @@ package coreCleaner;
 
 import java.io.*;
 
+/**
+ * @author jinshuguangze
+ * @version 1.1
+ */
 public class SuffixFilter implements FilenameFilter {
 	// 过滤器集,一般以文件类型作为区分,比如{".exe"}就是过滤出应用程序的
 	private String[] suffix;

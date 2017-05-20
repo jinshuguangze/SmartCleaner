@@ -5,15 +5,15 @@ import java.util.*;
 
 /**
  * @author jinshuguangze
- * @version 1.2
+ * @version 1.4
  */
 public class Reader {
 
 	// 文件结构集,key是上级文件,value是下级文件列表
-	private HashMap<File, File[]> fileMap = new HashMap<>();
+	private TreeMap<File, File[]> fileMap = new TreeMap<>(new FileComparator());
 
 	// 过滤文件结构集,key是上级文件,value是下级文件列表
-	private HashMap<File, File[]> fileMapFilter = new HashMap<>();
+	private TreeMap<File, File[]> fileMapFilter = new TreeMap<>(new FileComparator());
 
 	// 需要进行一系列处理的文件根目录,比如"C:\\"
 	private final String rootPath;
@@ -32,9 +32,8 @@ public class Reader {
 	public Reader(String rootPath, String... suffix) {
 		this.rootPath = rootPath;
 		this.suffix = suffix;
-		// 防止在循环时HashMap发生改变,复制一份
-		HashMap<File, File[]> fileMapClone = getAllFiles(rootPath);
-		HashMap<File, File[]> fileMapFilter = new HashMap<>();
+		// 防止在循环时TreeMap发生改变,复制一份
+		TreeMap<File, File[]> fileMapClone = getAllFiles(rootPath);
 		// 防止一开始给予的路径就是不存在路径
 		if (fileMapClone == null) {
 			return;
@@ -50,10 +49,9 @@ public class Reader {
 					}
 				}
 				// 如果没有文件满足过滤器,那么put进去的是个空数组
-				fileMapFilter.put(k, acceptFile.toArray(new File[acceptFile.size()]));
+				this.fileMapFilter.put(k, acceptFile.toArray(new File[acceptFile.size()]));
 			}
 		});
-		this.fileMapFilter = fileMapFilter;
 	}
 
 	/**
@@ -85,9 +83,9 @@ public class Reader {
 	 * @param path
 	 *            文件地址字符串
 	 * 
-	 * @return 一个存放过滤器下的文件集合的HashMap
+	 * @return 一个存放过滤器下的文件集合的TreeMap
 	 */
-	public HashMap<File, File[]> getAllFiles(String path) {
+	public TreeMap<File, File[]> getAllFiles(String path) {
 		File[] files = getFiles(path);
 		this.fileMap.put(new File(path), files);
 		// 如果路径不存在或者是空文件夹或文件,则跳出递归
@@ -100,21 +98,21 @@ public class Reader {
 	}
 
 	/**
-	 * 得到文件结构集HashMap,key是上级文件,value是下级文件列表
+	 * 得到文件结构集TreeMap,key是上级文件,value是下级文件列表
 	 * 
 	 * @return 得到文件结构集
 	 */
-	public HashMap<File, File[]> getFileMap() {
-		return fileMap;
+	public TreeMap<File, File[]> getFileMap() {
+		return this.fileMap;
 	}
 
 	/**
-	 * 得到过滤文件结构集HashMap,key是上级文件,value是下级文件列表
+	 * 得到过滤文件结构集TreeMap,key是上级文件,value是下级文件列表
 	 * 
 	 * @return 得到过滤文件结构集
 	 */
-	public HashMap<File, File[]> getFileMapFilter() {
-		return fileMapFilter;
+	public TreeMap<File, File[]> getFileMapFilter() {
+		return this.fileMapFilter;
 	}
 
 	/**
@@ -123,7 +121,7 @@ public class Reader {
 	 * @return 得到文件根目录
 	 */
 	public String getRootPath() {
-		return rootPath;
+		return this.rootPath;
 	}
 
 	/**
@@ -132,7 +130,7 @@ public class Reader {
 	 * @return 得到过滤器集
 	 */
 	public String[] getSuffix() {
-		return suffix;
+		return this.suffix;
 	}
 
 	/**
