@@ -34,7 +34,6 @@ public class Reader {
 		this.suffix = suffix;
 		// 防止在循环时HashMap发生改变,复制一份
 		HashMap<File, File[]> fileMapClone = getAllFiles(rootPath);
-		HashMap<File, File[]> fileMapFilter = new HashMap<>();
 		// 防止一开始给予的路径就是不存在路径
 		if (fileMapClone == null) {
 			return;
@@ -50,10 +49,9 @@ public class Reader {
 					}
 				}
 				// 如果没有文件满足过滤器,那么put进去的是个空数组
-				fileMapFilter.put(k, acceptFile.toArray(new File[acceptFile.size()]));
+				this.fileMapFilter.put(k, acceptFile.toArray(new File[acceptFile.size()]));
 			}
 		});
-		this.fileMapFilter = fileMapFilter;
 	}
 
 	/**

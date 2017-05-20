@@ -3,6 +3,10 @@ package coreCleaner;
 import java.io.*;
 import java.util.*;
 
+/**
+ * @author jinshuguangze
+ * @version 1.3
+ */
 public class Toolkit {
 
 	/**
