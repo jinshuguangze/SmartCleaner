@@ -32,26 +32,7 @@ public class Reader {
 	public Reader(String rootPath, String... suffix) {
 		this.rootPath = rootPath;
 		this.suffix = suffix;
-		// 防止在循环时HashMap发生改变,复制一份
-		HashMap<File, File[]> fileMapClone = getAllFiles(rootPath);
-		// 防止一开始给予的路径就是不存在路径
-		if (fileMapClone == null) {
-			return;
-		}
-		fileMapClone.forEach((k, v) -> {
-			// 防止子目录有不存在路径
-			if (v != null) {
-				Vector<File> acceptFile = new Vector<>();
-				SuffixFilter filter = new SuffixFilter(suffix);
-				for (File file : v) {
-					if (filter.accept(file.getParentFile(), file.getName())) {
-						acceptFile.add(file);
-					}
-				}
-				// 如果没有文件满足过滤器,那么put进去的是个空数组
-				this.fileMapFilter.put(k, acceptFile.toArray(new File[acceptFile.size()]));
-			}
-		});
+		getFilterFiles(getAllFiles(rootPath));
 	}
 
 	/**
@@ -60,7 +41,7 @@ public class Reader {
 	 * @param path
 	 *            文件地址字符串
 	 * 
-	 * @return 正常文件夹返回过滤后的文件列表,空文件夹和文件返回空数组,地址不存在返回空
+	 * @return 正常文件夹返回文件列表,空文件夹和文件返回空数组,地址不存在返回空
 	 */
 	public File[] getFiles(String path) {
 		File file = new File(path);
@@ -83,7 +64,7 @@ public class Reader {
 	 * @param path
 	 *            文件地址字符串
 	 * 
-	 * @return 一个存放过滤器下的文件集合的HashMap
+	 * @return 一个存放所有文件集合的HashMap
 	 */
 	public HashMap<File, File[]> getAllFiles(String path) {
 		File[] files = getFiles(path);
@@ -97,6 +78,34 @@ public class Reader {
 		return this.fileMap;
 	}
 
+	/**
+	 * 
+	 * @param fileMap 文件结构
+	 * @return 过滤后的文件结构
+	 */
+	public HashMap<File, File[]> getFilterFiles(HashMap<File, File[]> fileMap) {
+		// 防止一开始给予的路径就是不存在路径
+		if (fileMap == null) {
+			return null;
+		}
+		fileMap.forEach((k, v) -> {
+			// 防止子目录有不存在路径
+			if (v != null) {
+				Vector<File> acceptFile = new Vector<>();
+				SuffixFilter filter = new SuffixFilter(suffix);
+				for (File file : v) {
+					if (filter.accept(file.getParentFile(), file.getName())) {
+						acceptFile.add(file);
+					}
+				}
+				// 如果没有文件满足过滤器,那么put进去的是个空数组
+				this.fileMapFilter.put(k, acceptFile.toArray(new File[acceptFile.size()]));
+			}
+		});
+		return this.fileMapFilter;
+	}
+	
+	
 	/**
 	 * 得到文件结构集HashMap,key是上级文件,value是下级文件列表
 	 * 
@@ -137,9 +146,9 @@ public class Reader {
 	 * 
 	 * @param suffix
 	 */
-	public void setSuffix(String[] suffix) {
+	public void setSuffix(String... suffix) {
 		this.suffix = suffix;
-		// TODO
+		getFilterFiles(this.fileMap);
 	}
 
 }
