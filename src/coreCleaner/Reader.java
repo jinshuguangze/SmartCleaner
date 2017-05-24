@@ -15,7 +15,7 @@ public class Reader {
 	// 过滤文件结构集,key是上级文件,value是下级文件列表
 	private HashMap<File, File[]> fileMapFilter = new HashMap<>();
 
-	// 需要进行一系列处理的文件根目录,比如"C:\\"
+	// 需要进行一系列处理的文件根目录,比如"C:/"
 	private final String rootPath;
 
 	// 过滤器集,一般以文件类型作为区分,比如{".exe"}就是过滤出应用程序的
@@ -125,7 +125,7 @@ public class Reader {
 	}
 
 	/**
-	 * 得到需要进行一系列处理的文件根目录,比如"C:\\"
+	 * 得到需要进行一系列处理的文件根目录,比如"C:/"
 	 * 
 	 * @return 得到文件根目录
 	 */
